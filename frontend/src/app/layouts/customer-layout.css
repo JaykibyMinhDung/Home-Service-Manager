@@ -1,0 +1,48 @@
+.site-header {
+  background: var(--brand);
+  color: #fff;
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.brand {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+}
+
+.nav-links,
+.nav-account {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 1rem;
+}
+
+.nav-account {
+  margin-left: auto;
+}
+
+.nav-links a,
+.nav-account a:not(.btn) {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  padding: 0.25rem 0;
+  border-bottom: 2px solid transparent;
+}
+
+.nav-links a:hover,
+.nav-account a:not(.btn):hover,
+.nav-links a.active,
+.nav-account a:not(.btn).active {
+  color: #fff;
+  border-bottom-color: #fff;
+}

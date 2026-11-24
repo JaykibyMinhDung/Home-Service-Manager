@@ -1,0 +1,497 @@
+/*
+ * Kiểu của các component dùng chung trong mockup.
+ * Bootstrap, styles.css và CSS của hai bố cục được nạp thẳng từ thư mục frontend,
+ * nên mockup dùng đúng màu và bố cục của ứng dụng thật.
+ * Khi code màn hình trong Angular, mỗi khối dưới đây thành một component trong src/app/shared.
+ */
+
+/* PageHeader: tiêu đề trang và các nút thao tác */
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.page-header .page-title {
+  margin-bottom: 0;
+}
+
+.page-header .page-subtitle {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.page-header .page-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* StatusBadge: nhãn trạng thái */
+.status-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-badge.tone-warning {
+  background: #fff3cd;
+  color: #7a5200;
+}
+
+.status-badge.tone-info {
+  background: #d7ecfb;
+  color: #0b4f7d;
+}
+
+.status-badge.tone-primary {
+  background: #d5efe9;
+  color: #0a5345;
+}
+
+.status-badge.tone-success {
+  background: #d9f2dd;
+  color: #1c6b2c;
+}
+
+.status-badge.tone-danger {
+  background: #f9dcdc;
+  color: #8f1d1d;
+}
+
+.status-badge.tone-muted {
+  background: #e9ecef;
+  color: #495057;
+}
+
+/* DataTable: bảng dữ liệu đặt trong thẻ */
+.data-table {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.data-table table {
+  margin-bottom: 0;
+}
+
+.data-table thead th {
+  background: #f1f4f3;
+  color: #495057;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  border-bottom-width: 1px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.65rem 0.85rem;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.data-table .cell-sub {
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+.data-table .row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+.data-table .table-empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #6c757d;
+}
+
+/* FilterTabs: lọc danh sách theo trạng thái */
+.filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.filter-tabs .filter-tab {
+  padding: 0.35rem 0.85rem;
+  border: 1px solid #ced4da;
+  border-radius: 999px;
+  background: #fff;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.filter-tabs .filter-tab.active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.filter-tabs .filter-count {
+  margin-left: 0.3rem;
+  opacity: 0.75;
+}
+
+/* SectionCard: thẻ nội dung có tiêu đề */
+.section-card {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.section-card .section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* InfoList: danh sách nhãn và giá trị */
+.info-list {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 0.55rem 1rem;
+  margin: 0;
+}
+
+.info-list dt {
+  color: #6c757d;
+  font-weight: 400;
+}
+
+.info-list dd {
+  margin: 0;
+}
+
+/* PriceSummary: bảng tính giá */
+.price-summary .price-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.35rem 0;
+}
+
+.price-summary .price-line .price-note {
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+.price-summary .price-total {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #dee2e6;
+  font-weight: 600;
+}
+
+.price-summary .price-total .amount {
+  font-size: 1.25rem;
+  color: var(--brand);
+}
+
+/* OrderSteps: tiến độ của đơn */
+.order-steps {
+  display: flex;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.order-steps li {
+  flex: 1;
+  position: relative;
+  padding-top: 1.75rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.order-steps li::before {
+  content: '';
+  position: absolute;
+  top: 0.45rem;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #dee2e6;
+}
+
+.order-steps li::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1rem;
+  height: 1rem;
+  margin-left: -0.5rem;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #ced4da;
+}
+
+.order-steps li.done,
+.order-steps li.current {
+  color: #212529;
+}
+
+.order-steps li.done::before,
+.order-steps li.current::before {
+  background: var(--brand);
+}
+
+.order-steps li.done::after {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+.order-steps li.current::after {
+  border-color: var(--brand);
+}
+
+.order-steps li.current {
+  font-weight: 600;
+}
+
+/* StatCard: ô số liệu */
+.stat-card {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+  height: 100%;
+}
+
+.stat-card .stat-label {
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+.stat-card .stat-value {
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.stat-card .stat-hint {
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+/* BarChart: biểu đồ cột doanh thu theo tháng */
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.6rem;
+  height: 240px;
+  padding-top: 1.5rem;
+  border-bottom: 1px solid #ced4da;
+}
+
+.bar-chart .bar-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+}
+
+.bar-chart .bar-value {
+  font-size: 0.75rem;
+  color: #495057;
+  margin-bottom: 0.25rem;
+}
+
+.bar-chart .bar {
+  width: 100%;
+  max-width: 44px;
+  min-height: 2px;
+  border-radius: 4px 4px 0 0;
+  background: var(--brand);
+}
+
+.bar-chart-labels {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+
+.bar-chart-labels span {
+  flex: 1;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* Dialog: hộp thoại thêm, sửa và xác nhận */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(18, 30, 27, 0.5);
+  z-index: 100;
+}
+
+.dialog {
+  width: 100%;
+  max-width: 480px;
+  background: #fff;
+  border-radius: 0.6rem;
+  box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.25);
+}
+
+.dialog .dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #dee2e6;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.dialog .dialog-close {
+  color: #6c757d;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.dialog .dialog-body {
+  padding: 1.25rem;
+}
+
+.dialog .dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.9rem 1.25rem;
+  border-top: 1px solid #dee2e6;
+}
+
+/* PriceCard: thẻ loại xe và dịch vụ ở trang chủ */
+.price-card {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  height: 100%;
+}
+
+.price-card .price-card-name {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.price-card .price-card-desc {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.price-card .price-card-amount {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--brand);
+}
+
+/* CheckList: chọn nhiều mục (dịch vụ kèm theo, nhân sự) */
+.check-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.check-list .check-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.4rem;
+  background: #fff;
+}
+
+.check-list .check-item.checked {
+  border-color: var(--brand);
+  background: #f0f8f6;
+}
+
+.check-list .check-box {
+  display: inline-block;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-right: 0.6rem;
+  border: 1px solid #adb5bd;
+  border-radius: 0.2rem;
+  vertical-align: -0.15rem;
+  background: #fff;
+}
+
+.check-list .check-item.checked .check-box {
+  border-color: var(--brand);
+  background: var(--brand);
+  box-shadow: inset 0 0 0 2px #fff;
+}
+
+.check-list .check-note {
+  color: #6c757d;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+/* Trang giới thiệu bộ component */
+.sheet {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.sheet h2:not(.section-title) {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.75rem;
+  color: var(--brand-dark);
+}
+
+/* Trong trang giới thiệu, hộp thoại nằm tại chỗ thay vì phủ toàn màn hình. */
+.sheet .sheet-dialog .dialog-backdrop {
+  position: static;
+  padding: 0;
+  background: none;
+  justify-content: flex-start;
+}
+
+.sheet .sheet-dialog .dialog {
+  border: 1px solid #dee2e6;
+  box-shadow: none;
+}
+
+.sheet .sheet-name {
+  font-family: Consolas, monospace;
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-left: 0.5rem;
+  font-weight: 400;
+}

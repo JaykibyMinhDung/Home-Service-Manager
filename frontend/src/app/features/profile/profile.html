@@ -1,0 +1,123 @@
+<h1 class="page-title">Hồ sơ cá nhân</h1>
+
+@if (user(); as current) {
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="h6 mb-3">Thông tin tài khoản</h2>
+
+          @if (profileMessage()) {
+            <div class="alert alert-success py-2" role="status">{{ profileMessage() }}</div>
+          }
+          @if (profileError()) {
+            <div class="alert alert-danger py-2" role="alert">{{ profileError() }}</div>
+          }
+
+          <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" novalidate>
+            <div class="mb-3">
+              <label class="form-label" for="profileEmail">Email</label>
+              <input id="profileEmail" type="email" class="form-control" [value]="current.email" disabled />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="profileRole">Vai trò</label>
+              <input
+                id="profileRole"
+                type="text"
+                class="form-control"
+                [value]="roleLabels[current.role]"
+                disabled
+              />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="profileFullName">Họ tên</label>
+              <input
+                id="profileFullName"
+                type="text"
+                class="form-control"
+                formControlName="fullName"
+                [class.is-invalid]="
+                  profileForm.controls.fullName.touched && profileForm.controls.fullName.invalid
+                "
+              />
+              <div class="invalid-feedback">Nhập họ tên.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="profilePhone">Số điện thoại</label>
+              <input
+                id="profilePhone"
+                type="tel"
+                class="form-control"
+                formControlName="phone"
+                [class.is-invalid]="
+                  profileForm.controls.phone.touched && profileForm.controls.phone.invalid
+                "
+              />
+              <div class="invalid-feedback">Số điện thoại gồm 10 chữ số, bắt đầu bằng 0.</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" [disabled]="profileSaving()">
+              {{ profileSaving() ? 'Đang lưu...' : 'Lưu hồ sơ' }}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="h6 mb-3">Đổi mật khẩu</h2>
+
+          @if (passwordMessage()) {
+            <div class="alert alert-success py-2" role="status">{{ passwordMessage() }}</div>
+          }
+          @if (passwordError()) {
+            <div class="alert alert-danger py-2" role="alert">{{ passwordError() }}</div>
+          }
+
+          <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" novalidate>
+            <div class="mb-3">
+              <label class="form-label" for="oldPassword">Mật khẩu cũ</label>
+              <input
+                id="oldPassword"
+                type="password"
+                class="form-control"
+                formControlName="oldPassword"
+                autocomplete="current-password"
+                [class.is-invalid]="
+                  passwordForm.controls.oldPassword.touched &&
+                  passwordForm.controls.oldPassword.invalid
+                "
+              />
+              <div class="invalid-feedback">Nhập mật khẩu cũ.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="newPassword">Mật khẩu mới</label>
+              <input
+                id="newPassword"
+                type="password"
+                class="form-control"
+                formControlName="newPassword"
+                autocomplete="new-password"
+                [class.is-invalid]="
+                  passwordForm.controls.newPassword.touched &&
+                  passwordForm.controls.newPassword.invalid
+                "
+              />
+              <div class="invalid-feedback">Mật khẩu mới từ 6 ký tự.</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" [disabled]="passwordSaving()">
+              {{ passwordSaving() ? 'Đang đổi...' : 'Đổi mật khẩu' }}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+}

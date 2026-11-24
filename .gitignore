@@ -1,0 +1,15 @@
+# Kết quả build của backend (Maven tự tạo lại)
+backend/target/
+
+# Thư mục của IDE
+.idea/
+*.iml
+
+# File của hệ điều hành
+Thumbs.db
+.DS_Store
+
+# Cấu hình và bí mật riêng của từng máy
+.env
+*.log
+.claude/settings.local.json

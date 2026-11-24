@@ -1,0 +1,25 @@
+<div class="admin-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand">Quản trị chuyển nhà</div>
+
+    <nav class="sidebar-menu" aria-label="Menu quản trị">
+      @for (item of menu(); track item.path) {
+        <a [routerLink]="item.path" routerLinkActive="active">{{ item.label }}</a>
+      }
+    </nav>
+
+    @if (auth.user(); as user) {
+      <div class="sidebar-account">
+        <div class="account-name">{{ user.fullName }}</div>
+        <div class="account-role">{{ roleLabels[user.role] }}</div>
+        <button type="button" class="btn btn-sm btn-outline-light mt-2" (click)="auth.logout()">
+          Đăng xuất
+        </button>
+      </div>
+    }
+  </aside>
+
+  <main class="admin-content">
+    <router-outlet />
+  </main>
+</div>

@@ -1,0 +1,49 @@
+<div class="auth-page">
+  <div class="card shadow-sm auth-card">
+    <div class="card-body p-4">
+      <h1 class="h4 mb-1">Đăng nhập</h1>
+      <p class="text-secondary mb-4">Hệ thống quản lý dịch vụ chuyển nhà</p>
+
+      @if (error()) {
+        <div class="alert alert-danger py-2" role="alert">{{ error() }}</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="mb-3">
+          <label class="form-label" for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            class="form-control"
+            formControlName="email"
+            autocomplete="email"
+            [class.is-invalid]="form.controls.email.touched && form.controls.email.invalid"
+          />
+          <div class="invalid-feedback">Nhập email đúng định dạng.</div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label" for="password">Mật khẩu</label>
+          <input
+            id="password"
+            type="password"
+            class="form-control"
+            formControlName="password"
+            autocomplete="current-password"
+            [class.is-invalid]="form.controls.password.touched && form.controls.password.invalid"
+          />
+          <div class="invalid-feedback">Nhập mật khẩu.</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100" [disabled]="submitting()">
+          {{ submitting() ? 'Đang đăng nhập...' : 'Đăng nhập' }}
+        </button>
+      </form>
+
+      <p class="text-center mt-4 mb-0">
+        Chưa có tài khoản? <a routerLink="/register">Đăng ký</a>
+      </p>
+      <p class="text-center mt-2 mb-0"><a routerLink="/">Về trang chủ</a></p>
+    </div>
+  </div>
+</div>

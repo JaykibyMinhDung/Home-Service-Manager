@@ -1,0 +1,31 @@
+<header class="site-header">
+  <nav class="container site-nav" aria-label="Điều hướng chính">
+    <a class="brand" routerLink="/">Dịch vụ chuyển nhà</a>
+
+    <div class="nav-links">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        Trang chủ
+      </a>
+      @if (auth.isLoggedIn()) {
+        <a routerLink="/booking" routerLinkActive="active">Đặt dịch vụ</a>
+        <a routerLink="/my-orders" routerLinkActive="active">Đơn của tôi</a>
+      }
+    </div>
+
+    <div class="nav-account">
+      @if (auth.user(); as user) {
+        <a routerLink="/profile" routerLinkActive="active">{{ user.fullName }}</a>
+        <button type="button" class="btn btn-sm btn-outline-light" (click)="auth.logout()">
+          Đăng xuất
+        </button>
+      } @else {
+        <a routerLink="/login">Đăng nhập</a>
+        <a class="btn btn-sm btn-light" routerLink="/register">Đăng ký</a>
+      }
+    </div>
+  </nav>
+</header>
+
+<main class="container py-4">
+  <router-outlet />
+</main>

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>Mockup giao diện</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Dùng đúng CSS của ứng dụng thật trong thư mục frontend. Cần chạy npm install trong frontend trước. -->
+  <link rel="stylesheet" href="../../../frontend/node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../frontend/src/styles.css">
+  <link rel="stylesheet" href="../../../frontend/src/app/layouts/customer-layout.css">
+  <link rel="stylesheet" href="../../../frontend/src/app/layouts/admin-layout.css">
+  <link rel="stylesheet" href="components.css">
+</head>
+<body>
+  <div id="app"></div>
+  <script src="components.js"></script>
+  <script src="screens.js"></script>
+  <script>
+    // index.html           : danh sách các màn
+    // index.html?s=<tên>   : hiển thị một màn, ví dụ index.html?s=01-dang-nhap
+    const name = new URLSearchParams(location.search).get('s');
+    const screen = window.SCREENS[name];
+    if (screen) {
+      document.title = screen.title;
+      UI.mount(screen.render());
+    } else {
+      const links = Object.entries(window.SCREENS)
+        .map(([key, item]) => `<li class="mb-1"><a href="?s=${key}">${key}</a> <span class="text-secondary">${item.title}</span></li>`)
+        .join('');
+      UI.mount(`<div class="sheet"><h1 class="page-title">Mockup giao diện</h1><ul class="list-unstyled">${links}</ul></div>`);
+    }
+  </script>
+</body>
+</html>
