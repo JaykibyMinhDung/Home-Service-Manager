@@ -1,0 +1,105 @@
+<app-page-header heading="Xe" subtitle="Xe đang Bận sẽ tự về Rảnh khi đơn của nó hoàn thành.">
+  <button type="button" class="btn btn-primary" (click)="openForm(null)">Thêm xe</button>
+</app-page-header>
+
+@if (pageError()) {
+  <div class="alert alert-danger py-2" role="alert">{{ pageError() }}</div>
+}
+
+<app-data-table>
+  <thead>
+    <tr>
+      <th>Biển số</th>
+      <th>Loại xe</th>
+      <th>Trạng thái</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (item of items(); track item.id) {
+      <tr>
+        <td>{{ item.licensePlate }}</td>
+        <td>{{ item.vehicleType.name }}</td>
+        <td><app-status-badge kind="resource" [value]="item.status" /></td>
+        <td>
+          <div class="row-actions">
+            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="openForm(item)">
+              Sửa
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-danger" (click)="confirmDelete(item)">
+              Xóa
+            </button>
+          </div>
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="4" class="table-empty">{{ loading() ? 'Đang tải...' : 'Chưa có xe nào.' }}</td>
+      </tr>
+    }
+  </tbody>
+</app-data-table>
+
+@if (formOpen()) {
+  <app-dialog
+    [heading]="editing() ? 'Sửa xe' : 'Thêm xe'"
+    [busy]="saving()"
+    (confirmed)="save()"
+    (closed)="formOpen.set(false)"
+  >
+    @if (dialogError()) {
+      <div class="alert alert-danger py-2" role="alert">{{ dialogError() }}</div>
+    }
+    <div [formGroup]="form">
+      <app-form-field
+        label="Biển số"
+        fieldId="vhPlate"
+        [control]="form.controls.licensePlate"
+        error="Nhập biển số."
+      >
+        <input id="vhPlate" type="text" class="form-control" formControlName="licensePlate" placeholder="29C-111.11" />
+      </app-form-field>
+      <app-form-field
+        label="Loại xe"
+        fieldId="vhType"
+        [control]="form.controls.vehicleTypeId"
+        error="Chọn loại xe."
+      >
+        <select id="vhType" class="form-select" formControlName="vehicleTypeId">
+          <option [ngValue]="null" disabled>Chọn loại xe</option>
+          @for (type of vehicleTypes(); track type.id) {
+            <option [ngValue]="type.id">{{ type.name }}{{ type.active ? '' : ' (ngừng cung cấp)' }}</option>
+          }
+        </select>
+      </app-form-field>
+      @if (editing()) {
+        <app-form-field label="Trạng thái" fieldId="vhStatus">
+          <select id="vhStatus" class="form-select" formControlName="status">
+            @for (status of statuses; track status.value) {
+              <option [ngValue]="status.value">{{ status.label }}</option>
+            }
+          </select>
+        </app-form-field>
+      }
+    </div>
+  </app-dialog>
+}
+
+@if (deleting(); as item) {
+  <app-dialog
+    heading="Xóa xe"
+    confirmLabel="Xóa"
+    [danger]="true"
+    [busy]="saving()"
+    (confirmed)="remove()"
+    (closed)="deleting.set(null)"
+  >
+    @if (dialogError()) {
+      <div class="alert alert-danger py-2" role="alert">{{ dialogError() }}</div>
+    }
+    <p class="mb-0">
+      Xóa xe <strong>{{ item.licensePlate }}</strong>? Xe đã từng được phân công thì không xóa được,
+      khi đó hãy chuyển sang Bảo dưỡng.
+    </p>
+  </app-dialog>
+}

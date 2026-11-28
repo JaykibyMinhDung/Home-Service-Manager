@@ -7,22 +7,22 @@ Tổng cộng 88 test case, chia 8 nhóm. Cột "CN" là số chức năng trong
 | Nhóm | Mã | Số test case | Đạt | Chưa chạy |
 |---|---|---|---|---|
 | Tài khoản | TK | 15 | 10 | 5 |
-| Phân quyền | PQ | 10 | 5 | 5 |
-| Bảng giá | BG | 2 | 0 | 2 |
+| Phân quyền | PQ | 10 | 7 | 3 |
+| Bảng giá | BG | 2 | 2 | 0 |
 | Đặt dịch vụ và đơn của khách | DH | 14 | 0 | 14 |
 | Xử lý đơn | XL | 21 | 0 | 21 |
-| Quản trị | QT | 19 | 0 | 19 |
-| Thống kê | TKE | 4 | 0 | 4 |
+| Quản trị | QT | 19 | 15 | 4 |
+| Thống kê | TKE | 4 | 4 | 0 |
 | Luồng đầu cuối | E2E | 3 | 0 | 3 |
-| **Tổng** | | **88** | **15** | **73** |
+| **Tổng** | | **88** | **38** | **50** |
 
-Cập nhật ngày 24/11/2026. Các nhóm BG, DH, XL, QT, TKE, E2E chưa chạy được vì chức năng tương ứng chưa được xây dựng.
+Cập nhật ngày 28/11/2026. Các nhóm DH, XL, E2E chưa chạy được vì chức năng tương ứng chưa được xây dựng; QT-03, QT-07, QT-11, QT-14 còn phụ thuộc các màn và API đó.
 
 ### Giá trị của cột "Kết quả"
 
 | Giá trị | Ý nghĩa |
 |---|---|
-| Đạt (tự động) | Đã qua kiểm thử tự động trong `backend/src/test/java/com/movingservice/AuthFlowTest.java`. Kiểm thử này gọi thẳng API, nên phần hiển thị trên giao diện của test case đó chưa được thử |
+| Đạt (tự động) | Đã qua kiểm thử MockMvc trong `backend/src/test/java/com/movingservice/` (`AuthFlowTest`, `CatalogApiTest`, `FleetApiTest`, `StaffApiTest`, `ReportApiTest`). Kiểm thử này gọi thẳng API, nên phần hiển thị trên giao diện của test case đó chưa được thử |
 | Đạt (trình duyệt) | Đã thử tay trên giao diện |
 | Chưa chạy | Chưa kiểm thử |
 | Không đạt | Kết quả thực tế khác mong đợi; ghi mô tả lỗi bên cạnh |
@@ -84,8 +84,8 @@ Mật khẩu các tài khoản thử do người kiểm thử tự đặt, từ 
 | PQ-02 | 2 | Gọi API với token sai | | Gọi `GET /api/users/me` với token bịa | Mã 401 | Đạt (tự động) |
 | PQ-03 | 2 | Khách gọi API của nhân viên và admin | Đăng nhập là khách | Gọi `GET /api/staff/orders` và `GET /api/admin/staff` | Mã 403 ở cả hai | Đạt (tự động) |
 | PQ-04 | 2 | Khách mở trang quản trị | Đăng nhập là khách | Gõ địa chỉ `/admin` | Bị chuyển về trang chủ | Đạt (trình duyệt) |
-| PQ-05 | 2 | Nhân viên gọi API của admin | Đăng nhập là nhân viên | Gọi `GET /api/admin/staff` | Mã 403 | Chưa chạy |
-| PQ-06 | 2 | Menu của nhân viên | Đăng nhập là nhân viên | Xem menu trang quản trị; gõ địa chỉ `/admin/reports` | Chỉ thấy Đơn hàng và Hồ sơ cá nhân; bị chuyển về `/admin` | Chưa chạy |
+| PQ-05 | 2 | Nhân viên gọi API của admin | Đăng nhập là nhân viên | Gọi `GET /api/admin/staff` | Mã 403 | Đạt (tự động) |
+| PQ-06 | 2 | Menu của nhân viên | Đăng nhập là nhân viên | Xem menu trang quản trị; gõ địa chỉ `/admin/reports` | Chỉ thấy Đơn hàng và Hồ sơ cá nhân; bị chuyển về `/admin` | Đạt (trình duyệt) |
 | PQ-07 | 2 | Menu của admin | Đăng nhập là admin | Xem menu trang quản trị | Thấy đủ 8 mục | Đạt (trình duyệt) |
 | PQ-08 | 2 | Token hết hạn | Đã đăng nhập, token đã quá hạn | Mở một trang có gọi API | Tự đăng xuất, về trang Đăng nhập | Chưa chạy |
 | PQ-09 | 7 | Khách xem đơn của khách khác | Khách A có một đơn; đăng nhập là khách B | Gọi `GET /api/orders/{id}` với mã đơn của khách A | Mã 404 | Chưa chạy |
@@ -95,8 +95,8 @@ Mật khẩu các tài khoản thử do người kiểm thử tự đặt, từ 
 
 | Mã | CN | Tên test case | Điều kiện trước | Các bước | Kết quả mong đợi | Kết quả |
 |---|---|---|---|---|---|---|
-| BG-01 | 5 | Xem bảng giá khi chưa đăng nhập | Có dữ liệu thử | Mở trang chủ | Thấy 2 loại xe và 2 dịch vụ kèm đúng giá | Chưa chạy |
-| BG-02 | 5 | Loại xe ngừng cung cấp không hiện | Admin đã tắt "Xe tải 2 tấn" | Mở trang chủ | Chỉ thấy "Xe tải 1 tấn" | Chưa chạy |
+| BG-01 | 5 | Xem bảng giá khi chưa đăng nhập | Có dữ liệu thử | Mở trang chủ | Thấy 2 loại xe và 2 dịch vụ kèm đúng giá | Đạt (tự động, trình duyệt) |
+| BG-02 | 5 | Loại xe ngừng cung cấp không hiện | Admin đã tắt "Xe tải 2 tấn" | Mở trang chủ | Chỉ thấy "Xe tải 1 tấn" | Đạt (tự động) |
 
 ## 6. Đặt dịch vụ và đơn của khách (DH)
 
@@ -151,25 +151,25 @@ Mật khẩu các tài khoản thử do người kiểm thử tự đặt, từ 
 
 | Mã | CN | Tên test case | Điều kiện trước | Các bước | Kết quả mong đợi | Kết quả |
 |---|---|---|---|---|---|---|
-| QT-01 | 14 | Thêm loại xe | | Nhập "Xe tải 1 tấn", 1.000 kg, 300.000, 15.000, bấm Lưu | Loại xe hiện trong danh sách và bảng giá | Chưa chạy |
-| QT-02 | 14 | Thêm loại xe trùng tên | Đã có "Xe tải 1 tấn" | Thêm loại xe cùng tên | Báo lỗi trùng tên, không lưu | Chưa chạy |
-| QT-03 | 14 | Sửa đơn giá không đổi giá đơn cũ | Có đơn giá ước tính 830.000 dùng Xe tải 1 tấn | Đổi giá mỗi km thành 20.000; mở lại đơn cũ | Bảng giá hiện giá mới; đơn cũ vẫn 830.000 | Chưa chạy |
-| QT-04 | 14 | Ngừng cung cấp loại xe | | Tắt "Xe tải 2 tấn" | Còn trong danh sách của admin, không còn trong bảng giá | Chưa chạy |
-| QT-05 | 14 | Xóa loại xe chưa dùng | Loại xe chưa có xe và chưa có đơn | Bấm Xóa, xác nhận | Loại xe biến mất khỏi danh sách | Chưa chạy |
-| QT-06 | 14 | Xóa loại xe đã dùng | Loại xe đã có xe hoặc đơn | Bấm Xóa, xác nhận | Báo lỗi, loại xe vẫn còn | Chưa chạy |
-| QT-07 | 15 | Thêm dịch vụ kèm theo | | Nhập "Đóng gói đồ đạc", 200.000, bấm Lưu | Dịch vụ hiện trong danh sách và trang Đặt dịch vụ | Chưa chạy |
-| QT-08 | 15 | Xóa dịch vụ đã có đơn dùng | Có đơn chọn dịch vụ đó | Bấm Xóa, xác nhận | Báo lỗi, dịch vụ vẫn còn | Chưa chạy |
-| QT-09 | 16 | Thêm xe | Có loại Xe tải 1 tấn | Nhập biển số 29C-111.11, chọn loại xe, bấm Lưu | Xe hiện trong danh sách, trạng thái Rảnh | Chưa chạy |
-| QT-10 | 16 | Thêm xe trùng biển số | Đã có xe 29C-111.11 | Thêm xe cùng biển số | Báo lỗi trùng biển số, không lưu | Chưa chạy |
-| QT-11 | 16 | Chuyển xe sang Bảo dưỡng | Xe đang Rảnh | Sửa trạng thái thành Bảo dưỡng | Xe không còn trong danh sách xe rảnh khi phân công | Chưa chạy |
-| QT-12 | 16 | Xóa xe đã từng được phân công | Xe đã gắn với một đơn | Bấm Xóa, xác nhận | Báo lỗi, xe vẫn còn | Chưa chạy |
-| QT-13 | 17 | Thêm nhân sự | | Nhập họ tên, SĐT, vị trí Tài xế, bấm Lưu | Nhân sự hiện trong danh sách, trạng thái Rảnh | Chưa chạy |
-| QT-14 | 17 | Chuyển nhân sự sang Đã nghỉ | Nhân sự đang Rảnh | Sửa trạng thái thành Đã nghỉ | Nhân sự không còn trong danh sách phân công | Chưa chạy |
-| QT-15 | 17 | Xóa nhân sự đã từng được phân công | Nhân sự đã gắn với một đơn | Bấm Xóa, xác nhận | Báo lỗi, nhân sự vẫn còn | Chưa chạy |
-| QT-16 | 18 | Tạo tài khoản nhân viên | Email chưa được dùng | Nhập họ tên, email, SĐT, mật khẩu, bấm Lưu; đăng xuất; đăng nhập bằng tài khoản mới | Tài khoản hiện trong danh sách; đăng nhập vào được trang quản trị | Chưa chạy |
-| QT-17 | 18 | Tạo tài khoản nhân viên trùng email | Email đã được dùng | Tạo tài khoản với email đó | Báo "Email đã được sử dụng" | Chưa chạy |
-| QT-18 | 18 | Khóa tài khoản nhân viên | Nhân viên đang đăng nhập ở trình duyệt khác | Admin bấm Khóa; nhân viên tải lại trang | Nhân viên bị đưa về trang Đăng nhập và không đăng nhập lại được | Chưa chạy |
-| QT-19 | 18 | Mở khóa tài khoản nhân viên | Tài khoản đang bị khóa | Admin bấm Mở khóa; nhân viên đăng nhập | Đăng nhập thành công | Chưa chạy |
+| QT-01 | 14 | Thêm loại xe | | Nhập "Xe tải 1 tấn", 1.000 kg, 300.000, 15.000, bấm Lưu | Loại xe hiện trong danh sách và bảng giá | Đạt (tự động, trình duyệt) |
+| QT-02 | 14 | Thêm loại xe trùng tên | Đã có "Xe tải 1 tấn" | Thêm loại xe cùng tên | Báo lỗi trùng tên, không lưu | Đạt (tự động, trình duyệt) |
+| QT-03 | 14 | Sửa đơn giá không đổi giá đơn cũ | Có đơn giá ước tính 830.000 dùng Xe tải 1 tấn | Đổi giá mỗi km thành 20.000; mở lại đơn cũ | Bảng giá hiện giá mới; đơn cũ vẫn 830.000 | Chưa chạy (cần màn chi tiết đơn) |
+| QT-04 | 14 | Ngừng cung cấp loại xe | | Tắt "Xe tải 2 tấn" | Còn trong danh sách của admin, không còn trong bảng giá | Đạt (tự động) |
+| QT-05 | 14 | Xóa loại xe chưa dùng | Loại xe chưa có xe và chưa có đơn | Bấm Xóa, xác nhận | Loại xe biến mất khỏi danh sách | Đạt (tự động, trình duyệt) |
+| QT-06 | 14 | Xóa loại xe đã dùng | Loại xe đã có xe hoặc đơn | Bấm Xóa, xác nhận | Báo lỗi, loại xe vẫn còn | Đạt (tự động, trình duyệt) |
+| QT-07 | 15 | Thêm dịch vụ kèm theo | | Nhập "Đóng gói đồ đạc", 200.000, bấm Lưu | Dịch vụ hiện trong danh sách và trang Đặt dịch vụ | Chưa chạy (đã thử phần danh sách; trang Đặt dịch vụ chưa có) |
+| QT-08 | 15 | Xóa dịch vụ đã có đơn dùng | Có đơn chọn dịch vụ đó | Bấm Xóa, xác nhận | Báo lỗi, dịch vụ vẫn còn | Đạt (tự động) |
+| QT-09 | 16 | Thêm xe | Có loại Xe tải 1 tấn | Nhập biển số 29C-111.11, chọn loại xe, bấm Lưu | Xe hiện trong danh sách, trạng thái Rảnh | Đạt (tự động) |
+| QT-10 | 16 | Thêm xe trùng biển số | Đã có xe 29C-111.11 | Thêm xe cùng biển số | Báo lỗi trùng biển số, không lưu | Đạt (tự động) |
+| QT-11 | 16 | Chuyển xe sang Bảo dưỡng | Xe đang Rảnh | Sửa trạng thái thành Bảo dưỡng | Xe không còn trong danh sách xe rảnh khi phân công | Chưa chạy (đã đổi được trạng thái; API xe rảnh chưa có) |
+| QT-12 | 16 | Xóa xe đã từng được phân công | Xe đã gắn với một đơn | Bấm Xóa, xác nhận | Báo lỗi, xe vẫn còn | Đạt (tự động, trình duyệt) |
+| QT-13 | 17 | Thêm nhân sự | | Nhập họ tên, SĐT, vị trí Tài xế, bấm Lưu | Nhân sự hiện trong danh sách, trạng thái Rảnh | Đạt (tự động) |
+| QT-14 | 17 | Chuyển nhân sự sang Đã nghỉ | Nhân sự đang Rảnh | Sửa trạng thái thành Đã nghỉ | Nhân sự không còn trong danh sách phân công | Chưa chạy (API nhân sự rảnh chưa có) |
+| QT-15 | 17 | Xóa nhân sự đã từng được phân công | Nhân sự đã gắn với một đơn | Bấm Xóa, xác nhận | Báo lỗi, nhân sự vẫn còn | Đạt (tự động, trình duyệt) |
+| QT-16 | 18 | Tạo tài khoản nhân viên | Email chưa được dùng | Nhập họ tên, email, SĐT, mật khẩu, bấm Lưu; đăng xuất; đăng nhập bằng tài khoản mới | Tài khoản hiện trong danh sách; đăng nhập vào được trang quản trị | Đạt (tự động, trình duyệt) |
+| QT-17 | 18 | Tạo tài khoản nhân viên trùng email | Email đã được dùng | Tạo tài khoản với email đó | Báo "Email đã được sử dụng" | Đạt (tự động) |
+| QT-18 | 18 | Khóa tài khoản nhân viên | Nhân viên đang đăng nhập ở trình duyệt khác | Admin bấm Khóa; nhân viên tải lại trang | Nhân viên bị đưa về trang Đăng nhập và không đăng nhập lại được | Đạt (tự động) |
+| QT-19 | 18 | Mở khóa tài khoản nhân viên | Tài khoản đang bị khóa | Admin bấm Mở khóa; nhân viên đăng nhập | Đăng nhập thành công | Đạt (tự động) |
 
 ## 9. Thống kê (TKE)
 
@@ -177,10 +177,10 @@ Mật khẩu các tài khoản thử do người kiểm thử tự đặt, từ 
 
 | Mã | CN | Tên test case | Điều kiện trước | Các bước | Kết quả mong đợi | Kết quả |
 |---|---|---|---|---|---|---|
-| TKE-01 | 19 | Doanh thu theo tháng | Tháng 12/2026 có 2 đơn Hoàn thành, giá chốt 850.000 và 1.200.000 | Chọn năm 2026 | Tháng 12 hiện doanh thu 2.050.000 và 2 đơn; đủ 12 dòng | Chưa chạy |
-| TKE-02 | 19 | Đơn chưa hoàn thành không tính doanh thu | Thêm 1 đơn Đã hủy và 1 đơn Đã xác nhận trong tháng 12/2026 | Chọn năm 2026 | Doanh thu tháng 12 vẫn là 2.050.000 | Chưa chạy |
-| TKE-03 | 19 | Số đơn theo trạng thái | Có đơn ở cả 5 trạng thái | Chọn năm 2026 | Số đơn của từng trạng thái khớp với danh sách đơn | Chưa chạy |
-| TKE-04 | 19 | Năm không có đơn | Năm 2025 không có đơn | Chọn năm 2025 | 12 tháng đều doanh thu 0; mọi trạng thái đều 0 đơn | Chưa chạy |
+| TKE-01 | 19 | Doanh thu theo tháng | Tháng 12/2026 có 2 đơn Hoàn thành, giá chốt 850.000 và 1.200.000 | Chọn năm 2026 | Tháng 12 hiện doanh thu 2.050.000 và 2 đơn; đủ 12 dòng | Đạt (tự động) |
+| TKE-02 | 19 | Đơn chưa hoàn thành không tính doanh thu | Thêm 1 đơn Đã hủy và 1 đơn Đã xác nhận trong tháng 12/2026 | Chọn năm 2026 | Doanh thu tháng 12 vẫn là 2.050.000 | Đạt (tự động) |
+| TKE-03 | 19 | Số đơn theo trạng thái | Có đơn ở cả 5 trạng thái | Chọn năm 2026 | Số đơn của từng trạng thái khớp với danh sách đơn | Đạt (tự động, trình duyệt) |
+| TKE-04 | 19 | Năm không có đơn | Năm 2025 không có đơn | Chọn năm 2025 | 12 tháng đều doanh thu 0; mọi trạng thái đều 0 đơn | Đạt (tự động) |
 
 ## 10. Luồng đầu cuối (E2E)
 

@@ -10,7 +10,7 @@ Tổng cộng 40 API, kiểu REST, dữ liệu gửi và nhận là JSON.
 | Xác thực | JWT. Sau khi đăng nhập, gửi kèm header `Authorization: Bearer <token>` ở mọi API cần đăng nhập |
 | Ngày giờ | Chuỗi ISO, ví dụ `2026-12-05T08:30:00` |
 | Tiền | Số nguyên, đơn vị VND |
-| Lỗi | Trả về `{ "message": "Nội dung lỗi" }` kèm mã HTTP tương ứng |
+| Phản hồi | Mọi API, kể cả khi lỗi, trả về cùng một dạng `ApiResponse`: `{ "status", "message", "data" }` (xem mục 3) |
 
 ### Quyền truy cập
 
@@ -28,7 +28,6 @@ Tổng cộng 40 API, kiểu REST, dữ liệu gửi và nhận là JSON.
 |---|---|
 | 200 | Thành công |
 | 201 | Tạo mới thành công |
-| 204 | Thành công, không có dữ liệu trả về |
 | 400 | Dữ liệu gửi lên không hợp lệ |
 | 401 | Chưa đăng nhập, token sai hoặc hết hạn |
 | 403 | Không đủ quyền |
@@ -37,7 +36,7 @@ Tổng cộng 40 API, kiểu REST, dữ liệu gửi và nhận là JSON.
 
 ## 2. Danh sách API
 
-Cột "CN" là số thứ tự chức năng trong [chuc-nang.md](chuc-nang.md).
+Cột "CN" là số thứ tự chức năng trong [chuc-nang.md](chuc-nang.md). Cột "Kết quả" ghi mã HTTP và nội dung của trường `data`; API ghi "không có dữ liệu" trả `data` là `null`.
 
 ### 2.1. Tài khoản (5 API)
 
@@ -49,7 +48,7 @@ Module `auth` (API 1, 2) và `user` (API 3, 4, 5).
 | 2 | POST | `/auth/login` | Công khai | `email`, `password` | 200, `token` và `user` | 2 |
 | 3 | GET | `/users/me` | Đã đăng nhập | Không | 200, `User` đang đăng nhập | 4 |
 | 4 | PUT | `/users/me` | Đã đăng nhập | `fullName`, `phone` | 200, `User` sau khi sửa | 4 |
-| 5 | PUT | `/users/me/password` | Đã đăng nhập | `oldPassword`, `newPassword` | 204 | 4 |
+| 5 | PUT | `/users/me/password` | Đã đăng nhập | `oldPassword`, `newPassword` | 200, không có dữ liệu | 4 |
 
 Đăng xuất (chức năng 3) không cần API: giao diện tự xóa token đang lưu.
 
@@ -59,8 +58,10 @@ Module `catalog`.
 
 | # | Phương thức | Đường dẫn | Quyền | Dữ liệu gửi | Kết quả | CN |
 |---|---|---|---|---|---|---|
-| 6 | GET | `/vehicle-types` | Công khai | Tham số `includeInactive` (chỉ Admin dùng được) | 200, danh sách `VehicleType` đang cung cấp | 5, 14 |
+| 6 | GET | `/vehicle-types` | Công khai | Tham số `includeInactive` (chỉ Admin dùng được) | 200, danh sách `VehicleType` đang cung cấp, xếp theo tải trọng tăng dần | 5, 14 |
 | 7 | GET | `/extra-services` | Công khai | Tham số `includeInactive` (chỉ Admin dùng được) | 200, danh sách `ExtraService` đang cung cấp | 5, 15 |
+
+`includeInactive=true` chỉ có tác dụng khi người gọi là Admin; người gọi khác vẫn nhận danh sách đang cung cấp.
 
 ### 2.3. Đơn của khách (5 API)
 
@@ -98,10 +99,10 @@ Module `catalog`. Danh sách dùng lại API 6 và 7 với `includeInactive=true
 |---|---|---|---|---|---|---|
 | 22 | POST | `/admin/vehicle-types` | Admin | `name`, `capacityKg`, `basePrice`, `pricePerKm` | 201, `VehicleType` | 14 |
 | 23 | PUT | `/admin/vehicle-types/{id}` | Admin | `name`, `capacityKg`, `basePrice`, `pricePerKm`, `active` | 200, `VehicleType` | 14 |
-| 24 | DELETE | `/admin/vehicle-types/{id}` | Admin | Không | 204. Trả 409 nếu loại xe đã có xe hoặc đơn dùng tới | 14 |
+| 24 | DELETE | `/admin/vehicle-types/{id}` | Admin | Không | 200, không có dữ liệu. Trả 409 nếu loại xe đã có xe hoặc đơn dùng tới | 14 |
 | 25 | POST | `/admin/extra-services` | Admin | `name`, `description`, `price` | 201, `ExtraService` | 15 |
 | 26 | PUT | `/admin/extra-services/{id}` | Admin | `name`, `description`, `price`, `active` | 200, `ExtraService` | 15 |
-| 27 | DELETE | `/admin/extra-services/{id}` | Admin | Không | 204. Trả 409 nếu dịch vụ đã có đơn dùng tới | 15 |
+| 27 | DELETE | `/admin/extra-services/{id}` | Admin | Không | 200, không có dữ liệu. Trả 409 nếu dịch vụ đã có đơn dùng tới | 15 |
 
 ### 2.6. Quản trị xe và đội vận chuyển (8 API)
 
@@ -112,11 +113,11 @@ Module `fleet`.
 | 28 | GET | `/admin/vehicles` | Admin | Không | 200, danh sách `Vehicle` | 16 |
 | 29 | POST | `/admin/vehicles` | Admin | `licensePlate`, `vehicleTypeId` | 201, `Vehicle` ở trạng thái `AVAILABLE` | 16 |
 | 30 | PUT | `/admin/vehicles/{id}` | Admin | `licensePlate`, `vehicleTypeId`, `status` | 200, `Vehicle` | 16 |
-| 31 | DELETE | `/admin/vehicles/{id}` | Admin | Không | 204. Trả 409 nếu xe đã từng được phân công | 16 |
+| 31 | DELETE | `/admin/vehicles/{id}` | Admin | Không | 200, không có dữ liệu. Trả 409 nếu xe đã từng được phân công | 16 |
 | 32 | GET | `/admin/workers` | Admin | Không | 200, danh sách `Worker` | 17 |
 | 33 | POST | `/admin/workers` | Admin | `fullName`, `phone`, `position` | 201, `Worker` ở trạng thái `AVAILABLE` | 17 |
 | 34 | PUT | `/admin/workers/{id}` | Admin | `fullName`, `phone`, `position`, `status` | 200, `Worker` | 17 |
-| 35 | DELETE | `/admin/workers/{id}` | Admin | Không | 204. Trả 409 nếu nhân sự đã từng được phân công | 17 |
+| 35 | DELETE | `/admin/workers/{id}` | Admin | Không | 200, không có dữ liệu. Trả 409 nếu nhân sự đã từng được phân công | 17 |
 
 ### 2.7. Quản trị tài khoản nhân viên (3 API)
 
@@ -126,18 +127,28 @@ Module `user`.
 |---|---|---|---|---|---|---|
 | 36 | GET | `/admin/staff` | Admin | Không | 200, danh sách `User` có vai trò `STAFF` | 18 |
 | 37 | POST | `/admin/staff` | Admin | `fullName`, `email`, `phone`, `password` | 201, `User` có vai trò `STAFF` | 18 |
-| 38 | PUT | `/admin/staff/{id}/active` | Admin | `active` | 200, `User` sau khi khóa hoặc mở khóa | 18 |
+| 38 | PUT | `/admin/staff/{id}/active` | Admin | `active` | 200, `User` sau khi khóa hoặc mở khóa. Trả 404 nếu `id` không phải tài khoản nhân viên | 18 |
 
 ### 2.8. Thống kê (2 API)
 
-Module `report`. Doanh thu chỉ tính đơn `COMPLETED`, theo giá chốt và theo tháng của ngày chuyển.
+Module `report`. Doanh thu chỉ tính đơn `COMPLETED`, theo giá chốt và theo tháng của ngày chuyển. Cả hai API lọc đơn theo năm của ngày chuyển (`movingTime`).
 
 | # | Phương thức | Đường dẫn | Quyền | Dữ liệu gửi | Kết quả | CN |
 |---|---|---|---|---|---|---|
-| 39 | GET | `/admin/reports/revenue` | Admin | Tham số `year` | 200, 12 dòng `month`, `revenue`, `orderCount` | 19 |
-| 40 | GET | `/admin/reports/orders-by-status` | Admin | Tham số `year` | 200, mỗi trạng thái một dòng `status`, `count` | 19 |
+| 39 | GET | `/admin/reports/revenue` | Admin | Tham số `year` | 200, 12 dòng `month`, `revenue`, `orderCount`; tháng không có đơn là 0 | 19 |
+| 40 | GET | `/admin/reports/orders-by-status` | Admin | Tham số `year` | 200, đủ 5 trạng thái, mỗi trạng thái một dòng `status`, `count` | 19 |
 
 ## 3. Cấu trúc dữ liệu trả về
+
+### `ApiResponse`
+
+Vỏ chung của mọi phản hồi. Các cấu trúc bên dưới nằm trong trường `data`.
+
+| Trường | Kiểu | Mô tả |
+|---|---|---|
+| `status` | số | Trùng với mã HTTP: 200, 201, 400, 401, 403, 404, 409 |
+| `message` | chuỗi | Thành công: "Thành công", "Tạo mới thành công" hoặc câu riêng như "Đã xóa xe". Lỗi: nội dung lỗi bằng tiếng Việt |
+| `data` | tùy API | Dữ liệu trả về; `null` khi lỗi hoặc khi API không có dữ liệu |
 
 ### `User`
 
@@ -245,8 +256,10 @@ Mật khẩu không bao giờ được trả về.
 | 13 | 19 | Không cập nhật thanh toán cho đơn `CANCELLED` | 409 |
 | 14 | 24, 27, 31, 35 | Không xóa được mục đã có đơn dùng tới | 409 |
 | 15 | 12, 18 | `reason` không được để trống | 400 |
-| 16 | 22, 23, 25, 26 | Tên loại xe và tên dịch vụ không được trùng; giá từ 0 trở lên | 409, 400 |
-| 17 | 29, 30 | Biển số không được trùng | 409 |
+| 16 | 22, 23, 25, 26 | Tên loại xe và tên dịch vụ không được trùng (không phân biệt hoa thường); giá từ 0 trở lên, là số nguyên; tải trọng lớn hơn 0 | 409, 400 |
+| 17 | 29, 30 | Biển số không được trùng (không phân biệt hoa thường, lưu dạng chữ hoa); loại xe phải tồn tại | 409, 400 |
+| 18 | 33, 34 | Số điện thoại gồm 10 chữ số, bắt đầu bằng 0 | 400 |
+| 19 | 39, 40 | `year` từ 2000 đến 2100 | 400 |
 
 ## 5. Ví dụ
 
@@ -265,14 +278,18 @@ Nhận:
 
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiJ9...",
-  "user": {
-    "id": 5,
-    "fullName": "Nguyễn Văn A",
-    "email": "khach@example.com",
-    "phone": "0901234567",
-    "role": "CUSTOMER",
-    "active": true
+  "status": 200,
+  "message": "Thành công",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiJ9...",
+    "user": {
+      "id": 5,
+      "fullName": "Nguyễn Văn A",
+      "email": "khach@example.com",
+      "phone": "0901234567",
+      "role": "CUSTOMER",
+      "active": true
+    }
   }
 }
 ```
@@ -295,11 +312,15 @@ Nhận, với loại xe có giá mở cửa 300.000đ và 15.000đ mỗi km, ph�
 
 ```json
 {
-  "basePrice": 300000,
-  "distanceFee": 180000,
-  "floorFee": 150000,
-  "servicesFee": 200000,
-  "total": 830000
+  "status": 200,
+  "message": "Thành công",
+  "data": {
+    "basePrice": 300000,
+    "distanceFee": 180000,
+    "floorFee": 150000,
+    "servicesFee": 200000,
+    "total": 830000
+  }
 }
 ```
 
@@ -315,12 +336,14 @@ Gửi:
 }
 ```
 
-Nhận: `Order` với `status` là `CONFIRMED`, kèm `finalPrice`, `vehicle` và `workers` vừa chọn.
+Nhận: `data` là `Order` với `status` là `CONFIRMED`, kèm `finalPrice`, `vehicle` và `workers` vừa chọn.
 
 ### Lỗi (mã 409)
 
 ```json
 {
-  "message": "Chỉ hủy được đơn đang chờ xác nhận"
+  "status": 409,
+  "message": "Chỉ hủy được đơn đang chờ xác nhận",
+  "data": null
 }
 ```

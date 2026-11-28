@@ -54,7 +54,8 @@ src/app/features/   Mỗi nhóm màn hình một thư mục
 
 - Controller nhận và trả `record` DTO, không trả entity. DTO của tài khoản không bao giờ chứa mật khẩu.
 - Kiểm tra dữ liệu vào bằng `@Valid` và annotation trên record, thông báo lỗi viết bằng tiếng Việt.
-- Lỗi nghiệp vụ ném `ApiException` (`badRequest`, `notFound`, `conflict`). Mọi lỗi trả về dạng `{ "message": "..." }`.
+- Mọi API trả về `ApiResponse<T>` (`common`) dạng `{ "status", "message", "data" }`: thành công dùng `ApiResponse.ok(data)`, `created(data)` hoặc `message("...")`; API xóa trả 200 với `data` là `null`, không dùng 204.
+- Lỗi nghiệp vụ ném `ApiException` (`badRequest`, `notFound`, `conflict`); `GlobalExceptionHandler` và `SecurityConfig` đổi mọi lỗi thành `ApiResponse` với `data` là `null`.
 - Phân quyền theo đường dẫn, khai báo một chỗ trong `SecurityConfig`: `/api/admin/**` cho admin, `/api/staff/**` cho nhân viên và admin, `/api/orders/**` cho khách. API mới phải nằm đúng tiền tố, không dùng `@PreAuthorize` rải rác.
 - Kiểm tra quyền trên dữ liệu (khách chỉ thấy đơn của mình) làm trong service; đơn không thuộc về người gọi thì trả 404.
 - Thao tác ghi đặt trong `@Transactional`.
@@ -69,7 +70,7 @@ src/app/features/   Mỗi nhóm màn hình một thư mục
 - Component standalone, không có hậu tố `.component` trong tên file (`login.ts`, `login.html`), tên lớp không có hậu tố `Component`.
 - Ứng dụng chạy zoneless: trạng thái hiển thị giữ trong `signal`, không dựa vào zone.js.
 - Template dùng `@if`, `@for`; form dùng Reactive Forms.
-- Gọi API qua service, đường dẫn tương đối `/api/...`. Token do `authInterceptor` gắn, không tự gắn ở từng lời gọi.
+- Gọi API qua service, đường dẫn tương đối `/api/...`. Service dùng `ApiService` (`core/api.service.ts`) để lấy sẵn trường `data` của `ApiResponse`. Token do `authInterceptor` gắn, không tự gắn ở từng lời gọi.
 - Lỗi API hiển thị bằng `apiErrorMessage(error)`.
 - Giao diện dùng lớp CSS của Bootstrap 5, không dùng JavaScript của Bootstrap, không thêm thư viện giao diện khác. Màu và kiểu chung nằm trong `src/styles.css`.
 - Màn hình mới phải dùng component trong `shared/` và giống ảnh mockup trong `documents/giao-dien/`. Cần một mẫu giao diện ở từ hai màn trở lên thì tách thành component trong `shared/`, không sao chép HTML.

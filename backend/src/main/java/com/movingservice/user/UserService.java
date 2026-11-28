@@ -1,6 +1,7 @@
 package com.movingservice.user;
 
 import com.movingservice.common.ApiException;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -56,6 +57,20 @@ public class UserService {
             throw ApiException.badRequest("Mật khẩu cũ không đúng");
         }
         user.setPasswordHash(passwordEncoder.encode(newPassword));
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> listByRole(Role role) {
+        return userRepository.findByRoleOrderByIdAsc(role);
+    }
+
+    @Transactional
+    public User setStaffActive(Long id, boolean active) {
+        User user = userRepository.findById(id)
+                .filter(found -> found.getRole() == Role.STAFF)
+                .orElseThrow(() -> ApiException.notFound("Không tìm thấy tài khoản nhân viên"));
+        user.setActive(active);
+        return user;
     }
 
     public boolean passwordMatches(User user, String rawPassword) {

@@ -1,17 +1,16 @@
 package com.movingservice.user;
 
+import com.movingservice.common.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /** Hồ sơ của tài khoản đang đăng nhập (API 3, 4, 5). */
@@ -42,21 +41,21 @@ public class UserController {
     }
 
     @GetMapping
-    public UserResponse me(Authentication authentication) {
-        return UserResponse.from(userService.getByEmail(authentication.getName()));
+    public ApiResponse<UserResponse> me(Authentication authentication) {
+        return ApiResponse.ok(UserResponse.from(userService.getByEmail(authentication.getName())));
     }
 
     @PutMapping
-    public UserResponse updateProfile(
+    public ApiResponse<UserResponse> updateProfile(
             Authentication authentication, @Valid @RequestBody UpdateProfileRequest request) {
-        return UserResponse.from(
-                userService.updateProfile(authentication.getName(), request.fullName(), request.phone()));
+        return ApiResponse.ok(UserResponse.from(
+                userService.updateProfile(authentication.getName(), request.fullName(), request.phone())));
     }
 
     @PutMapping("/password")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void changePassword(
+    public ApiResponse<Void> changePassword(
             Authentication authentication, @Valid @RequestBody ChangePasswordRequest request) {
         userService.changePassword(authentication.getName(), request.oldPassword(), request.newPassword());
+        return ApiResponse.message("Đã đổi mật khẩu");
     }
 }

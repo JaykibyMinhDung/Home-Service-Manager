@@ -1,6 +1,7 @@
 package com.movingservice.auth;
 
 import com.movingservice.common.ApiException;
+import com.movingservice.common.ApiResponse;
 import com.movingservice.user.Role;
 import com.movingservice.user.User;
 import com.movingservice.user.UserResponse;
@@ -60,18 +61,18 @@ public class AuthController {
     /** Tự đăng ký luôn tạo tài khoản khách hàng. Tài khoản nhân viên do admin tạo. */
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
+    public ApiResponse<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
         User user = userService.createUser(
                 request.fullName(), request.email(), request.phone(), request.password(), Role.CUSTOMER);
-        return toAuthResponse(user);
+        return ApiResponse.created(toAuthResponse(user));
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@Valid @RequestBody LoginRequest request) {
+    public ApiResponse<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         User user = userService.findByEmail(request.email())
                 .filter(found -> found.isActive() && userService.passwordMatches(found, request.password()))
                 .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Email hoặc mật khẩu không đúng"));
-        return toAuthResponse(user);
+        return ApiResponse.ok(toAuthResponse(user));
     }
 
     private AuthResponse toAuthResponse(User user) {

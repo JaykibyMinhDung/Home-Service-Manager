@@ -2,6 +2,8 @@ package com.movingservice.auth;
 
 import com.movingservice.user.UserService;
 import jakarta.servlet.DispatcherType;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,7 +16,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -57,11 +58,22 @@ public class SecurityConfig {
                         .requestMatchers("/api/orders/**").hasRole("CUSTOMER")
                         // Còn lại: chỉ cần đăng nhập
                         .anyRequest().authenticated())
-                // Chưa đăng nhập thì trả 401; đăng nhập nhưng thiếu quyền thì Spring Security tự trả 403.
-                .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint((request, response, ex) -> writeError(
+                                response, HttpStatus.UNAUTHORIZED, "Bạn chưa đăng nhập hoặc phiên đã hết hạn"))
+                        .accessDeniedHandler((request, response, ex) -> writeError(
+                                response, HttpStatus.FORBIDDEN, "Bạn không có quyền thực hiện thao tác này")))
                 .addFilterBefore(
                         new JwtAuthFilter(jwtService, userDetailsService),
                         UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    private static void writeError(HttpServletResponse response, HttpStatus status, String message)
+            throws IOException {
+        response.setStatus(status.value());
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write(
+                "{\"status\":%d,\"message\":\"%s\",\"data\":null}".formatted(status.value(), message));
     }
 }

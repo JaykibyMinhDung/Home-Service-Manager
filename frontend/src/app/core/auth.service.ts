@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, map, tap } from 'rxjs';
+import { ApiService } from './api.service';
 import { AuthResponse, Role, User } from './models';
 
 const STORAGE_KEY = 'moving_auth';
@@ -16,7 +16,7 @@ export interface RegisterData {
 /** Giữ phiên đăng nhập (token và thông tin tài khoản) và gọi các API tài khoản. */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly http = inject(HttpClient);
+  private readonly api = inject(ApiService);
   private readonly router = inject(Router);
 
   private readonly session = signal<AuthResponse | null>(readStoredSession());
@@ -26,13 +26,13 @@ export class AuthService {
   readonly isLoggedIn = computed(() => this.session() !== null);
 
   login(email: string, password: string): Observable<User> {
-    return this.http
+    return this.api
       .post<AuthResponse>('/api/auth/login', { email, password })
       .pipe(map((response) => this.startSession(response)));
   }
 
   register(data: RegisterData): Observable<User> {
-    return this.http
+    return this.api
       .post<AuthResponse>('/api/auth/register', data)
       .pipe(map((response) => this.startSession(response)));
   }
@@ -43,7 +43,7 @@ export class AuthService {
   }
 
   updateProfile(fullName: string, phone: string): Observable<User> {
-    return this.http.put<User>('/api/users/me', { fullName, phone }).pipe(
+    return this.api.put<User>('/api/users/me', { fullName, phone }).pipe(
       tap((user) => {
         const current = this.session();
         if (current) {
@@ -54,7 +54,7 @@ export class AuthService {
   }
 
   changePassword(oldPassword: string, newPassword: string): Observable<void> {
-    return this.http.put<void>('/api/users/me/password', { oldPassword, newPassword });
+    return this.api.put<void>('/api/users/me/password', { oldPassword, newPassword });
   }
 
   /** Trang mặc định sau khi đăng nhập, tùy vai trò. */

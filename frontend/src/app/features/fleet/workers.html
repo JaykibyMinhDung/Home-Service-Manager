@@ -1,0 +1,107 @@
+<app-page-header
+  heading="Đội vận chuyển"
+  subtitle="Tài xế và nhân viên bốc xếp. Họ không có tài khoản đăng nhập."
+>
+  <button type="button" class="btn btn-primary" (click)="openForm(null)">Thêm nhân sự</button>
+</app-page-header>
+
+@if (pageError()) {
+  <div class="alert alert-danger py-2" role="alert">{{ pageError() }}</div>
+}
+
+<app-data-table>
+  <thead>
+    <tr>
+      <th>Họ tên</th>
+      <th>Số điện thoại</th>
+      <th>Vị trí</th>
+      <th>Trạng thái</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (item of items(); track item.id) {
+      <tr>
+        <td>{{ item.fullName }}</td>
+        <td>{{ item.phone }}</td>
+        <td>{{ positionLabels[item.position] }}</td>
+        <td><app-status-badge kind="resource" [value]="item.status" /></td>
+        <td>
+          <div class="row-actions">
+            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="openForm(item)">
+              Sửa
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-danger" (click)="confirmDelete(item)">
+              Xóa
+            </button>
+          </div>
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="5" class="table-empty">{{ loading() ? 'Đang tải...' : 'Chưa có nhân sự nào.' }}</td>
+      </tr>
+    }
+  </tbody>
+</app-data-table>
+
+@if (formOpen()) {
+  <app-dialog
+    [heading]="editing() ? 'Sửa nhân sự' : 'Thêm nhân sự'"
+    [busy]="saving()"
+    (confirmed)="save()"
+    (closed)="formOpen.set(false)"
+  >
+    @if (dialogError()) {
+      <div class="alert alert-danger py-2" role="alert">{{ dialogError() }}</div>
+    }
+    <div [formGroup]="form">
+      <app-form-field label="Họ tên" fieldId="wkName" [control]="form.controls.fullName" error="Nhập họ tên.">
+        <input id="wkName" type="text" class="form-control" formControlName="fullName" />
+      </app-form-field>
+      <app-form-field
+        label="Số điện thoại"
+        fieldId="wkPhone"
+        [control]="form.controls.phone"
+        error="Số điện thoại gồm 10 chữ số, bắt đầu bằng 0."
+      >
+        <input id="wkPhone" type="tel" class="form-control" formControlName="phone" />
+      </app-form-field>
+      <app-form-field label="Vị trí" fieldId="wkPosition">
+        <select id="wkPosition" class="form-select" formControlName="position">
+          @for (position of positions; track position) {
+            <option [ngValue]="position">{{ positionLabels[position] }}</option>
+          }
+        </select>
+      </app-form-field>
+      @if (editing()) {
+        <app-form-field label="Trạng thái" fieldId="wkStatus">
+          <select id="wkStatus" class="form-select" formControlName="status">
+            @for (status of statuses; track status.value) {
+              <option [ngValue]="status.value">{{ status.label }}</option>
+            }
+          </select>
+        </app-form-field>
+      }
+    </div>
+  </app-dialog>
+}
+
+@if (deleting(); as item) {
+  <app-dialog
+    heading="Xóa nhân sự"
+    confirmLabel="Xóa"
+    [danger]="true"
+    [busy]="saving()"
+    (confirmed)="remove()"
+    (closed)="deleting.set(null)"
+  >
+    @if (dialogError()) {
+      <div class="alert alert-danger py-2" role="alert">{{ dialogError() }}</div>
+    }
+    <p class="mb-0">
+      Xóa nhân sự <strong>{{ item.fullName }}</strong>? Nhân sự đã từng được phân công thì không xóa
+      được, khi đó hãy chuyển sang Đã nghỉ.
+    </p>
+  </app-dialog>
+}

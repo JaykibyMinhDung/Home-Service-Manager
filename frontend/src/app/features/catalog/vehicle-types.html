@@ -1,0 +1,128 @@
+<app-page-header
+  heading="Loại xe và đơn giá"
+  subtitle="Giá ước tính của đơn tính theo giá mở cửa và giá mỗi km của loại xe."
+>
+  <button type="button" class="btn btn-primary" (click)="openForm(null)">Thêm loại xe</button>
+</app-page-header>
+
+@if (pageError()) {
+  <div class="alert alert-danger py-2" role="alert">{{ pageError() }}</div>
+}
+
+<app-data-table>
+  <thead>
+    <tr>
+      <th>Tên loại xe</th>
+      <th class="text-end">Tải trọng</th>
+      <th class="text-end">Giá mở cửa</th>
+      <th class="text-end">Giá mỗi km</th>
+      <th>Trạng thái</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (item of items(); track item.id) {
+      <tr>
+        <td>{{ item.name }}</td>
+        <td class="text-end">{{ item.capacityKg.toLocaleString('vi-VN') }} kg</td>
+        <td class="text-end">{{ item.basePrice | money }}</td>
+        <td class="text-end">{{ item.pricePerKm | money }}</td>
+        <td><app-status-badge kind="offer" [value]="item.active" /></td>
+        <td>
+          <div class="row-actions">
+            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="openForm(item)">
+              Sửa
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-danger" (click)="confirmDelete(item)">
+              Xóa
+            </button>
+          </div>
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="6" class="table-empty">
+          {{ loading() ? 'Đang tải...' : 'Chưa có loại xe nào.' }}
+        </td>
+      </tr>
+    }
+  </tbody>
+</app-data-table>
+
+@if (formOpen()) {
+  <app-dialog
+    [heading]="editing() ? 'Sửa loại xe' : 'Thêm loại xe'"
+    [busy]="saving()"
+    (confirmed)="save()"
+    (closed)="formOpen.set(false)"
+  >
+    @if (dialogError()) {
+      <div class="alert alert-danger py-2" role="alert">{{ dialogError() }}</div>
+    }
+    <div [formGroup]="form">
+      <app-form-field label="Tên loại xe" fieldId="vtName" [control]="form.controls.name" error="Nhập tên loại xe.">
+        <input id="vtName" type="text" class="form-control" formControlName="name" />
+      </app-form-field>
+      <app-form-field
+        label="Tải trọng"
+        fieldId="vtCapacity"
+        suffix="kg"
+        [control]="form.controls.capacityKg"
+        error="Tải trọng phải lớn hơn 0."
+      >
+        <input id="vtCapacity" type="number" min="1" class="form-control" formControlName="capacityKg" />
+      </app-form-field>
+      <div class="row gx-3 gy-0">
+        <div class="col-6">
+          <app-form-field
+            label="Giá mở cửa"
+            fieldId="vtBasePrice"
+            suffix="đ"
+            [control]="form.controls.basePrice"
+            error="Giá từ 0 trở lên."
+          >
+            <input id="vtBasePrice" type="number" min="0" class="form-control" formControlName="basePrice" />
+          </app-form-field>
+        </div>
+        <div class="col-6">
+          <app-form-field
+            label="Giá mỗi km"
+            fieldId="vtPricePerKm"
+            suffix="đ"
+            [control]="form.controls.pricePerKm"
+            error="Giá từ 0 trở lên."
+          >
+            <input id="vtPricePerKm" type="number" min="0" class="form-control" formControlName="pricePerKm" />
+          </app-form-field>
+        </div>
+      </div>
+      @if (editing()) {
+        <app-form-field label="Trạng thái" fieldId="vtActive">
+          <select id="vtActive" class="form-select" formControlName="active">
+            <option [ngValue]="true">Đang cung cấp</option>
+            <option [ngValue]="false">Ngừng cung cấp</option>
+          </select>
+        </app-form-field>
+      }
+    </div>
+  </app-dialog>
+}
+
+@if (deleting(); as item) {
+  <app-dialog
+    heading="Xóa loại xe"
+    confirmLabel="Xóa"
+    [danger]="true"
+    [busy]="saving()"
+    (confirmed)="remove()"
+    (closed)="deleting.set(null)"
+  >
+    @if (dialogError()) {
+      <div class="alert alert-danger py-2" role="alert">{{ dialogError() }}</div>
+    }
+    <p class="mb-0">
+      Xóa loại xe <strong>{{ item.name }}</strong>? Loại xe đã có xe hoặc đơn dùng tới thì không xóa
+      được, khi đó hãy chuyển sang ngừng cung cấp.
+    </p>
+  </app-dialog>
+}

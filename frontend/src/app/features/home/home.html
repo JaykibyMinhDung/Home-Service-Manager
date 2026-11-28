@@ -1,17 +1,56 @@
-<section class="card border-0 shadow-sm">
-  <div class="card-body p-4 p-md-5">
-    <h1 class="h2 mb-3">Chuyển nhà trọn gói, đặt lịch trong vài phút</h1>
-    <p class="text-secondary mb-4">
-      Chọn loại xe, nhập địa chỉ và thời gian, hệ thống báo giá ước tính ngay. Nhân viên sẽ xác
-      nhận và phân công xe cùng đội vận chuyển cho bạn.
-    </p>
+<section class="section-card p-4 p-md-5">
+  <h1 class="h2 mb-3">Chuyển nhà trọn gói, đặt lịch trong vài phút</h1>
+  <p class="text-secondary mb-4">
+    Chọn loại xe, nhập địa chỉ và thời gian, hệ thống báo giá ước tính ngay. Nhân viên sẽ xác
+    nhận và phân công xe cùng đội vận chuyển cho bạn.
+  </p>
 
-    @if (auth.isLoggedIn()) {
-      <a class="btn btn-primary me-2" routerLink="/booking">Đặt dịch vụ</a>
-      <a class="btn btn-outline-primary" routerLink="/my-orders">Đơn của tôi</a>
-    } @else {
-      <a class="btn btn-primary me-2" routerLink="/register">Đăng ký để đặt dịch vụ</a>
-      <a class="btn btn-outline-primary" routerLink="/login">Đăng nhập</a>
-    }
-  </div>
+  @if (auth.isLoggedIn()) {
+    <a class="btn btn-primary me-2" routerLink="/booking">Đặt dịch vụ</a>
+    <a class="btn btn-outline-primary" routerLink="/my-orders">Đơn của tôi</a>
+  } @else {
+    <a class="btn btn-primary me-2" routerLink="/register">Đăng ký để đặt dịch vụ</a>
+    <a class="btn btn-outline-primary" routerLink="/login">Đăng nhập</a>
+  }
 </section>
+
+@if (error()) {
+  <div class="alert alert-danger py-2" role="alert">{{ error() }}</div>
+}
+
+<app-page-header
+  heading="Bảng giá loại xe"
+  subtitle="Giá = giá mở cửa + số km × giá mỗi km. Phụ phí tầng: 50.000đ mỗi tầng, tầng trệt không tính."
+/>
+<div class="row g-3 mb-4">
+  @for (type of vehicleTypes(); track type.id) {
+    <div class="col-md-4">
+      <app-price-card
+        [name]="type.name"
+        [description]="vehicleDescription(type)"
+        [amount]="type.basePrice"
+        unit="mở cửa"
+      />
+    </div>
+  } @empty {
+    <div class="col-12 text-secondary">
+      {{ loading() ? 'Đang tải bảng giá...' : 'Chưa có loại xe nào đang cung cấp.' }}
+    </div>
+  }
+</div>
+
+<app-page-header heading="Dịch vụ kèm theo" />
+<div class="row g-3">
+  @for (service of extraServices(); track service.id) {
+    <div class="col-md-4">
+      <app-price-card
+        [name]="service.name"
+        [description]="service.description ?? ''"
+        [amount]="service.price"
+        unit="mỗi đơn"
+      />
+    </div>
+  } @empty {
+    <div class="col-12 text-secondary">Chưa có dịch vụ kèm theo nào.</div>
+  }
+</div>

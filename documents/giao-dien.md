@@ -50,7 +50,7 @@ node documents/giao-dien/mockup/xuat-anh.mjs
 | `BarChart` | Biểu đồ cột doanh thu theo tháng | 15 |
 | `Dialog` | Hộp thoại thêm, sửa, xác nhận xóa, nhập lý do hủy | 7, 9, 10 đến 14 |
 
-Trong ứng dụng Angular hiện mới có `CustomerLayout` và `AdminLayout`. Các component còn lại sẽ được tạo trong `frontend/src/app/shared` khi code màn hình đầu tiên dùng tới chúng.
+Trong ứng dụng Angular đã có `CustomerLayout`, `AdminLayout` và các component trong `frontend/src/app/shared`: `PageHeader`, `SectionCard`, `FormField`, `DataTable`, `StatusBadge`, `Dialog`, `PriceCard`, `StatCard`, `BarChart`, cùng pipe `money` để hiển thị tiền. Kiểu của các component này nằm trong `frontend/src/styles.css`. Trong Angular, tiêu đề của `PageHeader`, `SectionCard` và `Dialog` truyền qua thuộc tính `heading`. Các component còn lại sẽ được tạo khi code màn hình đầu tiên dùng tới chúng.
 
 ## 3. Màn hình dùng chung
 

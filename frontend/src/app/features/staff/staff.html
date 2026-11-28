@@ -1,0 +1,96 @@
+<app-page-header
+  heading="Tài khoản nhân viên"
+  subtitle="Nhân viên đăng nhập trang quản trị để xử lý đơn. Tài khoản không bị xóa, chỉ bị khóa."
+>
+  <button type="button" class="btn btn-primary" (click)="openForm()">Thêm nhân viên</button>
+</app-page-header>
+
+@if (pageError()) {
+  <div class="alert alert-danger py-2" role="alert">{{ pageError() }}</div>
+}
+
+<app-data-table>
+  <thead>
+    <tr>
+      <th>Họ tên</th>
+      <th>Email</th>
+      <th>Số điện thoại</th>
+      <th>Trạng thái</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (item of items(); track item.id) {
+      <tr>
+        <td>{{ item.fullName }}</td>
+        <td>{{ item.email }}</td>
+        <td>{{ item.phone }}</td>
+        <td><app-status-badge kind="account" [value]="item.active" /></td>
+        <td>
+          <div class="row-actions">
+            <button
+              type="button"
+              class="btn btn-sm"
+              [class.btn-outline-danger]="item.active"
+              [class.btn-outline-secondary]="!item.active"
+              [disabled]="togglingId() === item.id"
+              (click)="toggleActive(item)"
+            >
+              {{ item.active ? 'Khóa' : 'Mở khóa' }}
+            </button>
+          </div>
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="5" class="table-empty">
+          {{ loading() ? 'Đang tải...' : 'Chưa có tài khoản nhân viên nào.' }}
+        </td>
+      </tr>
+    }
+  </tbody>
+</app-data-table>
+
+@if (formOpen()) {
+  <app-dialog heading="Thêm nhân viên" [busy]="saving()" (confirmed)="save()" (closed)="formOpen.set(false)">
+    @if (dialogError()) {
+      <div class="alert alert-danger py-2" role="alert">{{ dialogError() }}</div>
+    }
+    <div [formGroup]="form">
+      <app-form-field label="Họ tên" fieldId="stName" [control]="form.controls.fullName" error="Nhập họ tên.">
+        <input id="stName" type="text" class="form-control" formControlName="fullName" />
+      </app-form-field>
+      <app-form-field
+        label="Email"
+        fieldId="stEmail"
+        [control]="form.controls.email"
+        error="Email không đúng định dạng."
+      >
+        <input id="stEmail" type="email" class="form-control" formControlName="email" autocomplete="off" />
+      </app-form-field>
+      <app-form-field
+        label="Số điện thoại"
+        fieldId="stPhone"
+        [control]="form.controls.phone"
+        error="Số điện thoại gồm 10 chữ số, bắt đầu bằng 0."
+      >
+        <input id="stPhone" type="tel" class="form-control" formControlName="phone" />
+      </app-form-field>
+      <app-form-field
+        label="Mật khẩu ban đầu"
+        fieldId="stPassword"
+        [control]="form.controls.password"
+        error="Mật khẩu từ 6 ký tự."
+        hint="Nhân viên tự đổi mật khẩu ở trang Hồ sơ sau khi đăng nhập."
+      >
+        <input
+          id="stPassword"
+          type="password"
+          class="form-control"
+          formControlName="password"
+          autocomplete="new-password"
+        />
+      </app-form-field>
+    </div>
+  </app-dialog>
+}

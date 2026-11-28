@@ -1,9 +1,15 @@
 import { Routes } from '@angular/router';
 import { customerAreaGuard, guestGuard, roleGuard } from './core/auth.guard';
 import { Login } from './features/auth/login';
+import { ExtraServices } from './features/catalog/extra-services';
+import { VehicleTypes } from './features/catalog/vehicle-types';
+import { Vehicles } from './features/fleet/vehicles';
+import { Workers } from './features/fleet/workers';
 import { Register } from './features/auth/register';
 import { Home } from './features/home/home';
 import { Profile } from './features/profile/profile';
+import { Reports } from './features/reports/reports';
+import { Staff } from './features/staff/staff';
 import { AdminLayout } from './layouts/admin-layout';
 import { CustomerLayout } from './layouts/customer-layout';
 import { ComingSoon } from './shared/coming-soon';
@@ -29,12 +35,12 @@ export const routes: Routes = [
         path: '',
         canActivate: [roleGuard('ADMIN')],
         children: [
-          { path: 'vehicle-types', component: ComingSoon, title: 'Loại xe và đơn giá' },
-          { path: 'extra-services', component: ComingSoon, title: 'Dịch vụ kèm theo' },
-          { path: 'vehicles', component: ComingSoon, title: 'Xe' },
-          { path: 'workers', component: ComingSoon, title: 'Đội vận chuyển' },
-          { path: 'staff', component: ComingSoon, title: 'Tài khoản nhân viên' },
-          { path: 'reports', component: ComingSoon, title: 'Thống kê' },
+          { path: 'vehicle-types', component: VehicleTypes, title: 'Loại xe và đơn giá' },
+          { path: 'extra-services', component: ExtraServices, title: 'Dịch vụ kèm theo' },
+          { path: 'vehicles', component: Vehicles, title: 'Xe' },
+          { path: 'workers', component: Workers, title: 'Đội vận chuyển' },
+          { path: 'staff', component: Staff, title: 'Tài khoản nhân viên' },
+          { path: 'reports', component: Reports, title: 'Thống kê' },
         ],
       },
     ],
